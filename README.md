@@ -1,3 +1,3 @@
 # BLE_OMRON
 
-Magellan.cpp Delete retransmission post because data sensor send real-time
+Magellan3 use nb-iot Sim7020 
