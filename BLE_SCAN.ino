@@ -66,6 +66,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
       Serial.println(advertisedDevice.getRSSI());
       char* Manufacturer = BLEUtils::buildHexData(nullptr, (uint8_t *)advertisedDevice.getManufacturerData().data(), advertisedDevice.getManufacturerData().length());
       ManufacturerData = Manufacturer;
+      free(Manufacturer);
       String Manu = ManufacturerData.substring(0, 4);
       if ( Manu == ManufacturerData_OMRON) {
         Serial.println(F(" ***** Device OMRON Found *****"));
