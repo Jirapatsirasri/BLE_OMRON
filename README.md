@@ -4,7 +4,7 @@ Magellan3 use nb-iot Sim7020
 
 Setting
 
-*Arduino
+* Arduino
   
   Tools
   
@@ -26,15 +26,17 @@ Setting
 
 *Increase size on loop (fix  stackoverflow) in file main.cpp 
   
-  -Location -> C:\Users\<Name-User>\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.2\cores\esp32\main.cpp
+  -Location 
+  
+     C:\Users\<Name-User>\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.2\cores\esp32\main.cpp
   
   -main.cpp 
   
-  -Change size (>=10000)
+    -Change size (>=10000)
   
-    Defaults : xTaskCreateUniversal(loopTask, "loopTask", 8192, NULL, 1, &loopTaskHandle, CONFIG_ARDUINO_RUNNING_CORE);
+      Defaults : xTaskCreateUniversal(loopTask, "loopTask", 8192, NULL, 1, &loopTaskHandle, CONFIG_ARDUINO_RUNNING_CORE);
   
-    Change : xTaskCreateUniversal(loopTask, "loopTask", 10240, NULL, 1, &loopTaskHandle, CONFIG_ARDUINO_RUNNING_CORE);
+      Change : xTaskCreateUniversal(loopTask, "loopTask", 10240, NULL, 1, &loopTaskHandle, CONFIG_ARDUINO_RUNNING_CORE);
 
 File
 
