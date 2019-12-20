@@ -27,6 +27,10 @@ Magellan7020 magel;
 String token;
 char auth[] = "your-key";
 
+
+bool switch_passive_to_active_ble = false;
+bool switch_active_to_passive_ble = false;
+
 void writeString(char add, String data);
 String read_String(char add);
 
@@ -98,7 +102,7 @@ void setup() {
   //check debug
   debug = true;
 
-  //add
+  //add Magellan begin
   magel.begin();
   magel.debug = true;
   token = magel.thingsregister();
@@ -372,6 +376,7 @@ void loop() {
   //-------------------- Part Calculator --------------------------
   if (calculator_ready == true) {
     //calculator address ble
+    vTaskDelay(10);
     if (debug) Serial.println(F("----- Calculator Ready -----"));
     if (debug) Serial.println(address_BLE);
     if (debug) Serial.println(ManufacturerData);
@@ -383,8 +388,9 @@ void loop() {
     String address_6 = address_BLE.substring(15, 17);
     String address_total = address_1 + "." + address_2 + "." + address_3 + "." + address_4 + "." + address_5 + "." + address_6;
     String address_total_S = "\"" + address_total + "\"";
-    vTaskDelay(10);
+    vTaskDelay(100);
     String type = ManufacturerData.substring(4, 6);
+
     // Type sensor omron
     //----- Advertising -----
     //*** USB ***
@@ -393,7 +399,7 @@ void loop() {
 
       //Calculate Mode : Sensor data
       //Mode Sensor Data (----- Mode 1 -----)
-      if (type == "01") {
+      if (type == "01" || type == "03") {
         //Temp Calculator
         String temp_1 = ManufacturerData.substring(8, 10);
         String temp_2 = ManufacturerData.substring(10, 12);
@@ -460,25 +466,31 @@ void loop() {
         //Send data to Magellan 3
         if (addressArray_OMRON[0] == address_BLE) {
           Serial.println(F("prepare to send data_1"));
+          vTaskDelay(100);
           String payload_1 = "{\"Address_1\":" + address_total_S + ",\"Temp_1\":" + String(temp_total) + ",\"Hum_1\":" + String(hum_total) + ",\"Light_1\":" + String(light_total) + ",\"Pressure_1\":" + String(baro_total) + ",\"Noise_1\":" + String(sound_total) + ",\"eTVOC_1\":" + String(etvoc_total) + ",\"eCO2_1\":" + String(eco2_total) + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
           magel.report(payload_1, token);
           vTaskDelay(100);
         }
         if (addressArray_OMRON[1] == address_BLE) {
           Serial.println(F("prepare to send data_2"));
+          vTaskDelay(100);
           String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Temp_2\":" + String(temp_total) + ",\"Hum_2\":" + String(hum_total) + ",\"Light_2\":" + String(light_total) + ",\"Pressure_2\":" + String(baro_total) + ",\"Noise_2\":" + String(sound_total) + ",\"eTVOC_2\":" + String(etvoc_total) + ",\"eCO2_2\":" + String(eco2_total) + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
           magel.report(payload_2, token);
           vTaskDelay(100);
         }
         if (addressArray_OMRON[2] == address_BLE) {
           Serial.println(F("prepare to send data_3"));
+          vTaskDelay(100);
           String payload_3 = "{\"Address_3\":" + address_total_S + ",\"Temp_3\":" + String(temp_total) + ",\"Hum_3\":" + String(hum_total) + ",\"Light_3\":" + String(light_total) + ",\"Pressure_3\":" + String(baro_total) + ",\"Noise_3\":" + String(sound_total) + ",\"eTVOC_3\":" + String(etvoc_total) + ",\"eCO2_3\":" + String(eco2_total) + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
           magel.report(payload_3, token);
           vTaskDelay(100);
         }
@@ -539,6 +551,7 @@ void loop() {
           vTaskDelay(100);
         }
         vTaskDelay(100);
+        switch_passive_to_active_ble = true;
       }
 
       //Calculate Mode : Calculator data
@@ -630,7 +643,7 @@ void loop() {
           VI_status = "\"EARTHQUAKE\"";
           Serial.println(F("EARTHQUAKE"));
         }
-        vTaskDelay(10);
+        vTaskDelay(100);
 
         //Send data to Magellan 3
         if (addressArray_OMRON[0] == address_BLE) {
@@ -638,6 +651,7 @@ void loop() {
           String payload_1 = "{\"Address_1\":" + address_total_S + ",\"Dis_1\":" + String(DI_total) + ",\"Heat_1\":" + String(Heat_total) + ",\"SI_1\":" + String(SI_total) + ",\"PGA_1\":" + String(PGA_total) + ",\"Seis_1\":" + String(Seis_total) + ",\"X_1\":" + String(x_total) + ",\"Y_1\":" + String(y_total) + ",\"Z_1\":" + String(z_total) + ",\"VI_1\":" + VI_status + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
           magel.report(payload_1, token);
           vTaskDelay(100);
         }
@@ -646,6 +660,7 @@ void loop() {
           String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Dis_2\":" + String(DI_total) + ",\"Heat_2\":" + String(Heat_total) + ",\"SI_2\":" + String(SI_total) + ",\"PGA_2\":" + String(PGA_total) + ",\"Seis_2\":" + String(Seis_total) + ",\"X_2\":" + String(x_total) + ",\"Y_2\":" + String(y_total) + ",\"Z_2\":" + String(z_total) + ",\"VI_1\":" + VI_status + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
           magel.report(payload_2, token);
           vTaskDelay(100);
         }
@@ -654,6 +669,7 @@ void loop() {
           String payload_3 = "{\"Address_3\":" + address_total_S + ",\"Dis_3\":" + String(DI_total) + ",\"Heat_3\":" + String(Heat_total) + ",\"SI_3\":" + String(SI_total) + ",\"PGA_3\":" + String(PGA_total) + ",\"Seis_3\":" + String(Seis_total) + ",\"X_3\":" + String(x_total) + ",\"Y_3\":" + String(y_total) + ",\"Z_3\":" + String(z_total) + ",\"VI_3\":" + VI_status + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
           magel.report(payload_3, token);
           vTaskDelay(100);
         }
@@ -714,6 +730,190 @@ void loop() {
           vTaskDelay(100);
         }
         vTaskDelay(100);
+        switch_passive_to_active_ble = true;
+      }
+    }
+
+    //Mode 3 : Scan response Data
+    else if (ManufacturerData.length() == 56 || ManufacturerData.length() == 58) {
+      if (type == "03") {
+        //Discomfort Index Calculator
+        String DI_1 = ManufacturerData.substring(8, 10);
+        String DI_2 = ManufacturerData.substring(10, 12);
+        String DI = DI_2 + DI_1;
+        int DI_dec = strtol(DI.c_str(), NULL, HEX);
+        float DI_total = DI_dec / 100.f;
+        Serial.print(F("Discomfort Index : "));
+        Serial.println(String(DI_total));
+
+        //Heat Stroke Calculator
+        String Heat_1 = ManufacturerData.substring(12, 14);
+        String Heat_2 = ManufacturerData.substring(14, 16);
+        String Heat = Heat_2 + Heat_1;
+        int Heat_dec = strtol(Heat.c_str(), NULL, HEX);
+        float Heat_total = Heat_dec / 100.f;
+        Serial.print(F("Heat Stroke : "));
+        Serial.println(String(Heat_total));
+
+        //SI value Calculator
+        String SI_1 = ManufacturerData.substring(18, 20);
+        String SI_2 = ManufacturerData.substring(20, 22);
+        String SI = SI_2 + SI_1;
+        int SI_dec = strtol(SI.c_str(), NULL, HEX);
+        float SI_total = SI_dec / 10.f;
+        Serial.print(F("SI : "));
+        Serial.println(String(SI_total));
+
+        //PGA Calculator
+        String PGA_1 = ManufacturerData.substring(22, 24);
+        String PGA_2 = ManufacturerData.substring(24, 26);
+        String PGA = PGA_2 + PGA_1;
+        int PGA_dec = strtol(PGA.c_str(), NULL, HEX);
+        float PGA_total = PGA_dec / 10.f;
+        Serial.print(F("PGA : "));
+        Serial.println(String(PGA_total));
+
+        //Seismic intensity Calculator
+        String Seis_1 = ManufacturerData.substring(26, 28);
+        String Seis_2 = ManufacturerData.substring(28, 30);
+        String Seis = Seis_2 + Seis_1;
+        int Seis_dec = strtol(Seis.c_str(), NULL, HEX);
+        float Seis_total = Seis_dec / 1000.f;
+        Serial.print(F("Seismic Intensity : "));
+        Serial.println(String(Seis_total));
+
+        //Acceleration (X-axis) Calculator
+        String x_1 = ManufacturerData.substring(30, 32);
+        String x_2 = ManufacturerData.substring(32, 34);
+        String x = x_2 + x_1;
+        int x_dec = strtol(x.c_str(), NULL, HEX);
+        float x_total = x_dec / 10.f;
+        Serial.print(F("X-axis : "));
+        Serial.println(String(x_total));
+
+        //Acceleration (Y-axis) Calculator
+        String y_1 = ManufacturerData.substring(34, 36);
+        String y_2 = ManufacturerData.substring(36, 38);
+        String y = y_2 + y_1;
+        int y_dec = strtol(y.c_str(), NULL, HEX);
+        float y_total = y_dec / 10.f;
+        Serial.print(F("Y-axis : "));
+        Serial.println(String(y_total));
+
+        //Acceleration (Z-axis) Calculator
+        String z_1 = ManufacturerData.substring(38, 40);
+        String z_2 = ManufacturerData.substring(40, 42);
+        String z = z_2 + z_1;
+        int z_dec = strtol(z.c_str(), NULL, HEX);
+        float z_total = z_dec / 10.f;
+        Serial.print(F("Z-axis : "));
+        Serial.println(String(z_total));
+
+        //Vibration information Calculator
+        String VI = ManufacturerData.substring(16, 18);
+        String VI_status = "";
+        if (VI == "00") {
+          "\"" + address_total + "\"";
+          VI_status = "\"NONE\"";
+          Serial.println(F("NONE"));
+        } else if (VI == "01") {
+          VI_status = "\"VIBRATION\"";
+          Serial.println(F("VIBRATION"));
+        } else if (VI == "02") {
+          VI_status = "\"EARTHQUAKE\"";
+          Serial.println(F("EARTHQUAKE"));
+        }
+        vTaskDelay(100);
+        
+        //Send data to Magellan 3
+        if (addressArray_OMRON[0] == address_BLE) {
+          Serial.println(F("prepare to send data_1"));
+          vTaskDelay(100);
+          String payload_1 = "{\"Address_1\":" + address_total_S + ",\"Dis_1\":" + String(DI_total) + ",\"Heat_1\":" + String(Heat_total) + ",\"SI_1\":" + String(SI_total) + ",\"PGA_1\":" + String(PGA_total) + ",\"Seis_1\":" + String(Seis_total) + ",\"X_1\":" + String(x_total) + ",\"Y_1\":" + String(y_total) + ",\"Z_1\":" + String(z_total) + ",\"VI_1\":" + VI_status+ "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
+          magel.report(payload_1, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[1] == address_BLE) {
+          Serial.println(F("prepare to send data_2"));
+          vTaskDelay(100);
+          String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Dis_2\":" + String(DI_total) + ",\"Heat_2\":" + String(Heat_total)+ ",\"SI_2\":" + String(SI_total) + ",\"PGA_2\":" + String(PGA_total) + ",\"Seis_2\":" + String(Seis_total) + ",\"X_2\":" + String(x_total) + ",\"Y_2\":" + String(y_total) + ",\"Z_2\":" + String(z_total) + ",\"VI_1\":" + VI_status  + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
+          magel.report(payload_2, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[2] == address_BLE) {
+          Serial.println(F("prepare to send data_3"));
+          vTaskDelay(100);
+          String payload_3 = "{\"Address_3\":" + address_total_S + ",\"Dis_3\":" + String(DI_total) + ",\"Heat_3\":" + String(Heat_total)+ ",\"SI_3\":" + String(SI_total) + ",\"PGA_3\":" + String(PGA_total)  + ",\"Seis_3\":" + String(Seis_total) + ",\"X_3\":" + String(x_total) + ",\"Y_3\":" + String(y_total) + ",\"Z_3\":" + String(z_total) + ",\"VI_3\":" + VI_status+ "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          vTaskDelay(100);
+          magel.report(payload_3, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[3] == address_BLE) {
+          Serial.println(F("prepare to send data_4"));
+          String payload_4 = "{\"Address_4\":" + address_total_S + ",\"Dis_4\":" + String(DI_total) + ",\"Heat_4\":" + String(Heat_total) + ",\"SI_4\":" + String(SI_total) + ",\"PGA_4\":" + String(PGA_total) + ",\"Seis_4\":" + String(Seis_total) + ",\"X_4\":" + String(x_total) + ",\"Y_4\":" + String(y_total) + ",\"Z_4\":" + String(z_total) + ",\"VI_4\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_4, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[4] == address_BLE) {
+          Serial.println(F("prepare to send data_5"));
+          String payload_5 = "{\"Address_5\":" + address_total_S + ",\"Dis_5\":" + String(DI_total) + ",\"Heat_5\":" + String(Heat_total) + ",\"SI_5\":" + String(SI_total) + ",\"PGA_5\":" + String(PGA_total) + ",\"Seis_5\":" + String(Seis_total) + ",\"X_5\":" + String(x_total) + ",\"Y_5\":" + String(y_total) + ",\"Z_5\":" + String(z_total) + ",\"VI_5\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_5, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[5] == address_BLE) {
+          Serial.println(F("prepare to send data_6"));
+          String payload_6 = "{\"Address_6\":" + address_total_S + ",\"Dis_6\":" + String(DI_total) + ",\"Heat_6\":" + String(Heat_total) + ",\"SI_6\":" + String(SI_total) + ",\"PGA_6\":" + String(PGA_total) + ",\"Seis_6\":" + String(Seis_total) + ",\"X_6\":" + String(x_total) + ",\"Y_6\":" + String(y_total) + ",\"Z_6\":" + String(z_total) + ",\"VI_6\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_6, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[6] == address_BLE) {
+          Serial.println(F("prepare to send data_7"));
+          String payload_7 = "{\"Address_7\":" + address_total_S + ",\"Dis_7\":" + String(DI_total) + ",\"Heat_7\":" + String(Heat_total) + ",\"SI_7\":" + String(SI_total) + ",\"PGA_7\":" + String(PGA_total) + ",\"Seis_7\":" + String(Seis_total) + ",\"X_7\":" + String(x_total) + ",\"Y_7\":" + String(y_total) + ",\"Z_7\":" + String(z_total) + ",\"VI_7\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_7, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[7] == address_BLE) {
+          Serial.println(F("prepare to send data_8"));
+          String payload_8 = "{\"Address_8\":" + address_total_S + ",\"Dis_8\":" + String(DI_total) + ",\"Heat_8\":" + String(Heat_total) + ",\"SI_8\":" + String(SI_total) + ",\"PGA_8\":" + String(PGA_total) + ",\"Seis_8\":" + String(Seis_total) + ",\"X_8\":" + String(x_total) + ",\"Y_8\":" + String(y_total) + ",\"Z_8\":" + String(z_total) + ",\"VI_8\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_8, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[8] == address_BLE) {
+          Serial.println(F("prepare to send data_9"));
+          String payload_9 = "{\"Address_9\":" + address_total_S + ",\"Dis_9\":" + String(DI_total) + ",\"Heat_9\":" + String(Heat_total) + ",\"SI_9\":" + String(SI_total) + ",\"PGA_9\":" + String(PGA_total) + ",\"Seis_9\":" + String(Seis_total) + ",\"X_9\":" + String(x_total) + ",\"Y_9\":" + String(y_total) + ",\"Z_9\":" + String(z_total) + ",\"VI_9\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_9, token);
+          vTaskDelay(100);
+        }
+        if (addressArray_OMRON[9] == address_BLE) {
+          Serial.println(F("prepare to send data_10"));
+          String payload_10 = "{\"Address_10\":" + address_total_S + ",\"Dis_10\":" + String(DI_total) + ",\"Heat_10\":" + String(Heat_total) + ",\"SI_10\":" + String(SI_total) + ",\"PGA_10\":" + String(PGA_total) + ",\"Seis_10\":" + String(Seis_total) + ",\"X_10\":" + String(x_total) + ",\"Y_10\":" + String(y_total) + ",\"Z_10\":" + String(z_total) + ",\"VI_10\":" + VI_status + "}";
+          ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+          ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+          magel.report(payload_10, token);
+          vTaskDelay(100);
+        }
+        vTaskDelay(10);
+        switch_active_to_passive_ble = true;
       }
     }
 
@@ -890,6 +1090,7 @@ void loop() {
         vTaskDelay(100);
       }
       vTaskDelay(100);
+      switch_passive_to_active_ble = true;
     }
     calculator_ready = false;
     vTaskDelay(100);
@@ -897,9 +1098,37 @@ void loop() {
   }
 
   if (doScan == true) {
+    vTaskDelay(100);
     Serial.println(F("------------- Rescan ---------------"));
-    BLEDevice::getScan()->start(0);
-    doScan = false;
+    if (switch_passive_to_active_ble == true && doScan == true) {
+      Serial.println(F("Mode 3 : Switch Passive to Active BLE"));
+      ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+      ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+      BLEDevice::getScan()->setActiveScan(true);
+      BLEDevice::getScan()->start(0);
+      switch_active_to_passive_ble = false;
+      switch_passive_to_active_ble = false;
+      doScan = false;
+    } else if (switch_active_to_passive_ble == true && doScan == true) {
+      Serial.println(F("Mode 3 : Switch Active to Passive BLE"));
+      ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+      ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+      BLEDevice::getScan()->setActiveScan(false);
+      BLEDevice::getScan()->start(0);
+      switch_active_to_passive_ble = false;
+      switch_passive_to_active_ble = false;
+      doScan = false;
+    } else {
+      vTaskDelay(100);
+      Serial.println(F("Scan Active scan"));
+      ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
+      ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
+      BLEDevice::getScan()->setActiveScan(true);
+      BLEDevice::getScan()->start(0);
+      switch_active_to_passive_ble = false;
+      switch_passive_to_active_ble = false;
+      doScan = false;
+    }
   }
   vTaskDelay(500);
 }
