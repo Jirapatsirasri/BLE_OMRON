@@ -657,7 +657,7 @@ void loop() {
         }
         if (addressArray_OMRON[1] == address_BLE) {
           Serial.println(F("prepare to send data_2"));
-          String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Dis_2\":" + String(DI_total) + ",\"Heat_2\":" + String(Heat_total) + ",\"SI_2\":" + String(SI_total) + ",\"PGA_2\":" + String(PGA_total) + ",\"Seis_2\":" + String(Seis_total) + ",\"X_2\":" + String(x_total) + ",\"Y_2\":" + String(y_total) + ",\"Z_2\":" + String(z_total) + ",\"VI_1\":" + VI_status + "}";
+          String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Dis_2\":" + String(DI_total) + ",\"Heat_2\":" + String(Heat_total) + ",\"SI_2\":" + String(SI_total) + ",\"PGA_2\":" + String(PGA_total) + ",\"Seis_2\":" + String(Seis_total) + ",\"X_2\":" + String(x_total) + ",\"Y_2\":" + String(y_total) + ",\"Z_2\":" + String(z_total) + ",\"VI_2\":" + VI_status + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
           vTaskDelay(100);
@@ -839,7 +839,7 @@ void loop() {
         if (addressArray_OMRON[1] == address_BLE) {
           Serial.println(F("prepare to send data_2"));
           vTaskDelay(100);
-          String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Dis_2\":" + String(DI_total) + ",\"Heat_2\":" + String(Heat_total)+ ",\"SI_2\":" + String(SI_total) + ",\"PGA_2\":" + String(PGA_total) + ",\"Seis_2\":" + String(Seis_total) + ",\"X_2\":" + String(x_total) + ",\"Y_2\":" + String(y_total) + ",\"Z_2\":" + String(z_total) + ",\"VI_1\":" + VI_status  + "}";
+          String payload_2 = "{\"Address_2\":" + address_total_S + ",\"Dis_2\":" + String(DI_total) + ",\"Heat_2\":" + String(Heat_total)+ ",\"SI_2\":" + String(SI_total) + ",\"PGA_2\":" + String(PGA_total) + ",\"Seis_2\":" + String(Seis_total) + ",\"X_2\":" + String(x_total) + ",\"Y_2\":" + String(y_total) + ",\"Z_2\":" + String(z_total) + ",\"VI_2\":" + VI_status  + "}";
           ESP_LOGI(LOG_TAG, "free heap ammount: %d", esp_get_free_heap_size());
           ESP_LOGI(LOG_TAG, "free heap minimum ammount: %d", esp_get_minimum_free_heap_size());
           vTaskDelay(100);
